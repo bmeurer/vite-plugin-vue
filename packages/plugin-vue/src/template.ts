@@ -92,6 +92,16 @@ export function compile(
     )
   }
 
+  if (result.map && Array.isArray(result.map.sources)) {
+    const sourceFolder = path.dirname(descriptor.filename)
+    result.map.sources = result.map.sources.map((source) => {
+      if (path.isAbsolute(source)) {
+        source = path.relative(sourceFolder, source)
+      }
+      return source
+    })
+  }
+
   return result
 }
 

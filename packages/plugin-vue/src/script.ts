@@ -1,3 +1,4 @@
+import path from 'node:path'
 import type { SFCDescriptor, SFCScriptBlock } from 'vue/compiler-sfc'
 import { resolveTemplateCompilerOptions } from './template'
 import type { ResolvedOptions } from '.'
@@ -57,6 +58,16 @@ export function resolveScript(
     templateOptions: resolveTemplateCompilerOptions(descriptor, options, ssr),
     sourceMap: options.sourceMap,
   })
+
+  if (resolved.map && Array.isArray(resolved.map.sources)) {
+    const sourceFolder = path.dirname(descriptor.filename)
+    resolved.map.sources = resolved.map.sources.map((source) => {
+      if (path.isAbsolute(source)) {
+        source = path.relative(sourceFolder, source)
+      }
+      return source
+    })
+  }
 
   cacheToUse.set(descriptor, resolved)
   return resolved
